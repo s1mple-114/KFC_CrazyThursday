@@ -1,16 +1,22 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 
-class User(models.Model):
-    # 角色选项：顾客/店员
+class User(AbstractUser):
     ROLE_CHOICES = (
-        ('ROLE_CUSTOMER', '顾客'),
-        ('ROLE_STAFF', '店员'),
+        ('customer', '顾客'),
+        ('staff', '员工'),
+        ('admin', '管理员'),
     )
-    username = models.CharField(max_length=50, unique=True)  # 用户名（不重复）
-    password = models.CharField(max_length=128)  # 密码（Django自动加密）
-    role = models.CharField(max_length=20, choices=ROLE_CHOICES)  # 角色
-    created_time = models.DateTimeField(auto_now_add=True)  # 创建时间（自动填）
+    phone = models.CharField(max_length=15, blank=True, null=True)
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='customer')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+class Meta:
+    db_table = 'user'
+    verbose_name = '用户'
+    verbose_name_plural = '用户'
+
 
     # 后台显示用户名，方便查看
     def __str__(self):
-        return self.username
+        return f"{self.username} ({self.get_role_display()})"
