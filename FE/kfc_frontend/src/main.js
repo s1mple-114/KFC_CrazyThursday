@@ -15,4 +15,8 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 }
 // 全局使用Element Plus
 app.use(ElementPlus)
+// 新增：引入路由
+import router from './router'
+// 新增：使用路由
+app.use(router)
 app.mount('#app')
