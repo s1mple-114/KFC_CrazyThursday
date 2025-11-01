@@ -8,7 +8,7 @@ import random
 import string
 from .models import Order
 from .serializers import OrderSerializer
-from orderitem.serializers import orderitemSerializer
+from OrderItem.serializers import OrderItemSerializer
 
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
