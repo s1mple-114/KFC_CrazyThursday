@@ -1,7 +1,7 @@
 from django.db import models
 
 from order.models import Order
-from produce.models import Product
+from product.models import Product #将导入produce模块纠正为product
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items', verbose_name='订单')
