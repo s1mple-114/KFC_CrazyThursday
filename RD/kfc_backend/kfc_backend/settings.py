@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'user',
     'product',
     'order',
-    'OrderItem',
+    'orderitem',
     # 新增DRF (做接口用)
     'rest_framework',
     'corsheaders', 

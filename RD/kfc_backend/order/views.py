@@ -8,7 +8,7 @@ import random
 import string
 from .models import Order
 from .serializers import OrderSerializer
-from OrderItem.serializers import OrderItemSerializer
+from orderitem.serializers import orderitemSerializer
 
 class OrderViewSet(viewsets.ModelViewSet):
     serializer_class = OrderSerializer
