@@ -11,6 +11,7 @@ from .serializers import OrderSerializer
 from orderitem.serializers import orderitemSerializer
 
 class OrderViewSet(viewsets.ModelViewSet):
+    queryset = Order.objects.all()
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated]
     

@@ -2,7 +2,7 @@ from django.db import models
 from order.models import Order
 from product.models import Product
 
-class orderitem(models.Model):
+class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items', verbose_name='订单')
     product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='产品')
     quantity = models.PositiveIntegerField(default=1, verbose_name='数量')
