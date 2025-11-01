@@ -1,10 +1,10 @@
 from rest_framework import serializers
-from .models import orderitem
+from .models import OrderItem
 
-class orderitemSerializer(serializers.ModelSerializer):
+class OrderItemSerializer(serializers.ModelSerializer):
     product_name = serializers.CharField(source='product.name', read_only=True)
     subtotal = serializers.ReadOnlyField()
     
     class Meta:
-        model = orderitem
+        model = OrderItem
         fields = '__all__'
