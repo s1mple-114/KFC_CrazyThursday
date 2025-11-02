@@ -17,8 +17,9 @@ vue
         <el-form-item label="用户名" prop="username">
           <el-input 
             v-model="loginForm.username" 
-            placeholder="请输入用户名" 
             prefix-icon="User"
+            placeholder="请输入用户名" 
+            
           />
         </el-form-item>
         <!-- 密码输入框 -->
