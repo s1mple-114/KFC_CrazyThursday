@@ -7,12 +7,12 @@ from django.utils import timezone
 import random
 import string
 from .models import Order
-from .serializers import OrderSerializer
-from OrderItem.serializers import OrderItemSerializer
+from .serializers import orderSerializer
+from orderitem.serializers import orderitemSerializer
 
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
-    serializer_class = OrderSerializer
+    serializer_class = orderSerializer
     permission_classes = [IsAuthenticated]
     
     def get_queryset(self):
