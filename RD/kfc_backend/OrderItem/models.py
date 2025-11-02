@@ -1,7 +1,6 @@
 from django.db import models
-
 from order.models import Order
-from produce.models import Product
+from product.models import Product
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items', verbose_name='订单')
@@ -11,8 +10,6 @@ class OrderItem(models.Model):
     
     class Meta:
         db_table = 'order_item'
-        verbose_name = '订单项'
-        verbose_name_plural = '订单项'
 
     def __str__(self):
         return f"{self.product.name} x {self.quantity}"
@@ -20,5 +17,3 @@ class OrderItem(models.Model):
     @property
     def subtotal(self):
         return self.quantity * self.price
-
-# Create your models here.
