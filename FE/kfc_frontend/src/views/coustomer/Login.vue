@@ -1,8 +1,10 @@
+vue
 <template>
   <div class="login-container">
     <!-- 登录卡片 -->
     <div class="login-card">
-      <h2 class="login-title">KFC订单管理系统</h2>
+      <h2 class="login-title">欢迎光临KFC</h2>
+      <h2 class="login-title">请登录你的账号，系统将自动注册</h2>
       <!-- 登录表单 -->
       <el-form 
         ref="loginFormRef" 
@@ -61,8 +63,8 @@
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-
-
+// 假设request已全局引入，若未引入需补充：import request from '@/utils/request'
+import request from '../../utils/request'
 // 1. 路由实例
 const router = useRouter()
 // 2. 表单引用（用于表单验证）
@@ -73,11 +75,11 @@ const loginLoading = ref(false)
 const showPwd = ref(false)
 // 5. 登录表单数据
 const loginForm = reactive({
-  username: '', // 用户名（后端User表的username）
-  password: '', // 密码（后端User表的password，加密存储）
-  role: '' // 角色（customer/staff）
+  username: '',
+  password: '',
+  role: ''
 })
-// 6. 表单验证规则（前端先校验，减少后端请求）
+// 6. 表单验证规则
 const loginRules = reactive({
   username: [
     { required: true, message: '请输入用户名', trigger: 'blur' }
@@ -91,9 +93,9 @@ const loginRules = reactive({
   ]
 })
 
-// 7. 登录按钮点击事件
+// 7. 登录按钮点击事件（核心修改：登录即注册逻辑）
 const handleLogin = async () => {
-  // 第一步：前端校验表单（不通过则提示）
+  // 第一步：前端表单校验
   const valid = await loginFormRef.value.validate()
   if (!valid) return
 
@@ -101,37 +103,60 @@ const handleLogin = async () => {
   loginLoading.value = true
 
   try {
-    // 第三步：调用后端登录接口（接口地址按后端实际定义，这里假设是/login）
-    const res = await request.post('/login', {
-      username: loginForm.username,
-      password: loginForm.password,
-      role: loginForm.role
+    // 第三步：先查询用户是否已存在（需后端提供查询接口，假设为/user/exists）
+    const existsRes = await request.get('/user/exists', {
+      params: { username: loginForm.username, role: loginForm.role }
     })
 
-    // 第四步：登录成功，存储Token和角色到本地
-    localStorage.setItem('token', res.token) // 后端返回的Token
-    localStorage.setItem('role', loginForm.role)
-
-    // 第五步：根据角色跳对应页面
-    if (loginForm.role === 'customer') {
-      router.push('/menu') // 顾客跳菜单页
+    let res
+    // 第四步：判断用户是否存在，不存在则注册，存在则登录
+    if (!existsRes.data) {
+      // 新用户：调用注册接口（需后端提供注册接口，假设为/register）
+      await request.post('/register', {
+        username: loginForm.username,
+        password: loginForm.password,
+        role: loginForm.role
+      })
+      ElMessage.info('账号已自动注册，正在登录...')
+      
+      // 注册后执行登录
+      res = await request.post('/login', {
+        username: loginForm.username,
+        password: loginForm.password,
+        role: loginForm.role
+      })
     } else {
-      router.push('/staff/order') // 店员跳订单管理页
+      // 老用户：直接执行登录
+      res = await request.post('/login', {
+        username: loginForm.username,
+        password: loginForm.password,
+        role: loginForm.role
+      })
     }
 
-    // 提示成功
+    // 第五步：登录成功，存储Token和角色
+    localStorage.setItem('token', res.data.token) // 注意：根据后端返回结构调整（可能是res.token）
+    localStorage.setItem('role', loginForm.role)
+
+    // 第六步：根据角色跳转页面
+    if (loginForm.role === 'customer') {
+      router.push('/menu')
+    } else {
+      router.push('/staff/order')
+    }
+
     ElMessage.success('登录成功')
   } catch (error) {
-    // 登录失败（如账号密码错），会被request的响应拦截器处理，这里不用额外写
+    // 错误提示（覆盖后端未处理的异常）
+    ElMessage.error(error.message || '登录失败，请重试')
   } finally {
-    // 无论成功失败，关闭加载状态
+    // 关闭加载状态
     loginLoading.value = false
   }
 }
 </script>
 
 <style scoped>
-/* 登录页样式：居中显示 */
 .login-container {
   width: 100vw;
   height: 100vh;
@@ -149,7 +174,7 @@ const handleLogin = async () => {
 }
 .login-title {
   text-align: center;
-  color: #D32F2F; /* KFC红色 */
+  color: #D32F2F;
   margin-bottom: 20px;
 }
 .login-form {
