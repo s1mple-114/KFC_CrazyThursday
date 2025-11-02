@@ -26,3 +26,7 @@ urlpatterns = [
     path('api/orders/', include('order.urls')),
     path('api/order-items/', include('orderitem.urls')),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# 只在开发环境下提供媒体文件服务
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,9 +1,9 @@
 from rest_framework import serializers
 from .models import Order
-from orderitem.serializers import orderitemSerializer
+from orderitem.serializers import OrderItemSerializer
 
-class orderSerializer(serializers.ModelSerializer):
-    items = orderitemSerializer(many=True, read_only=True)
+class OrderSerializer(serializers.ModelSerializer):
+    items = OrderItemSerializer(many=True, read_only=True)
     user_name = serializers.CharField(source='user.username', read_only=True)
     
     class Meta:
