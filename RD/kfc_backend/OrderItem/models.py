@@ -3,8 +3,8 @@ from order.models import Order
 from product.models import Product
 
 class OrderItem(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items', verbose_name='订单')
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='产品')
+    order = models.ForeignKey('order.Order', on_delete=models.CASCADE, related_name='items', verbose_name='订单')
+    product = models.ForeignKey('product.Product', on_delete=models.CASCADE, verbose_name='产品')
     quantity = models.PositiveIntegerField(default=1, verbose_name='数量')
     price = models.DecimalField(max_digits=8, decimal_places=2, verbose_name='单价')
     
