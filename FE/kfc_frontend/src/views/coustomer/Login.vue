@@ -141,9 +141,9 @@ const handleLogin = async () => {
 
     // 第六步：根据角色跳转页面
     if (loginForm.role === 'customer') {
-      router.push('/menu')
+      router.push('/Menu')
     } else {
-      router.push('/staff/order')
+      router.push('../staff/order')
     }
 
     ElMessage.success('登录成功')
