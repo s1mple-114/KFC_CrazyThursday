@@ -4,6 +4,8 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.contrib.auth import login, logout
+
+from .permissions import IsOwnerOrStaff,IsStaffUser
 from .models import User
 from .serializers import UserSerializer, UserRegistrationSerializer, LoginSerializer
 
@@ -14,6 +16,15 @@ class UserViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.action in ['register', 'login']:
             return [AllowAny()]  # 注册和登录不需要认证
+        if self.action in ["list", "retrieve"]:
+            # 【查看用户列表/详情】→ 用户自己能看自己的，店员能看所有用户
+            return [IsOwnerOrStaff()]
+        elif self.action in ["update", "partial_update"]:
+            # 【修改用户信息】→ 只能自己修改（店员一般不允许改普通用户）
+            return [IsOwnerOrStaff()]
+        elif self.action == "destroy":
+            # 【删除用户】→ 仅店员（或超级管理员）有权限
+            return [IsStaffUser()] 
         return [IsAuthenticated()]  # 其他操作需要登录
     
     @action(detail=False, methods=['post'], permission_classes=[AllowAny])
