@@ -1,4 +1,5 @@
 from rest_framework import permissions
+from .models import User #导入自定义User模块
 
 class IsStaffUser(permissions.BasePermission):
     """
