@@ -11,6 +11,17 @@ class User(AbstractUser):
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='customer')
     created_at = models.DateTimeField(auto_now_add=True)  # 创建时间，自动设置
 
+     # 方便后续权限判断的快捷方法
+    @property
+    def is_staff_user(self):
+        """判断是否为店员"""
+        return self.role == 'staff'
+
+    @property
+    def is_customer(self):
+        """判断是否为顾客"""
+        return self.role == 'customer'
+
 class Meta:
     db_table = 'user' # 数据库表名
     verbose_name = '用户' # 单数显示名称
