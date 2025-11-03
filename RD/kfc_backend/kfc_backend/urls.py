@@ -14,6 +14,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from rest_framework.authtoken import views as token_views
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
@@ -25,6 +26,7 @@ urlpatterns = [
     path('api/products/', include('product.urls')),
     path('api/orders/', include('order.urls')),
     path('api/order-items/', include('orderitem.urls')),
+    path('api/token/',token_views.obtain_auth_token)
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # 只在开发环境下提供媒体文件服务
