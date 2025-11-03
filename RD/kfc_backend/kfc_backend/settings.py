@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     'orderitem',
     # 新增DRF (做接口用)
     'rest_framework',
+    'rest_framework.authtoken',
+    # 新增CORS (解决跨域问题)
     'corsheaders', 
 ]
 
@@ -137,7 +139,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.SessionAuthentication',# Session  认证
+        'rest_framework.authentication.TokenAuthentication', # Token  认证
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
@@ -152,6 +155,11 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
 ]
+
+CORS_ALLOW_CREDENTIALS = True
+
+# 允许所有主机访问（开发环境）
+ALLOWED_HOSTS = ['*']
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

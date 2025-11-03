@@ -12,7 +12,13 @@ class Order(models.Model):
         ('COMPLETED', '已完成'),
         ('CANCELLED', '已取消'),
     )
-    
+    def can_update_to(self, new_status):
+        """验证状态更新是否合法（比如“待支付”才能转“已支付”）"""
+        valid_transitions = {
+            'pending': ['paid'],
+            'paid': ['completed'],
+        }
+        return new_status in valid_transitions.get(self.status, [])
     # 支付方式选项
     PAYMENT_CHOICES = (
         ('CASH', '现金'),
