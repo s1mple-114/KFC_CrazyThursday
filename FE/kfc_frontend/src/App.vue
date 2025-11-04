@@ -1,5 +1,5 @@
 <template>
-  <!-- 关键：路由出口必须存在，所有页面通过 router-view 渲染 -->
+  <!-- 所有页面通过 router-view 渲染 -->
   <router-view />
 </template>
 
