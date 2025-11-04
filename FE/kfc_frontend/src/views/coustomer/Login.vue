@@ -1,4 +1,3 @@
-vue
 <template>
   <div class="login-container">
     <!-- 登录卡片 -->
@@ -19,7 +18,6 @@ vue
             v-model="loginForm.username" 
             prefix-icon="User"
             placeholder="请输入用户名" 
-            
           />
         </el-form-item>
         <!-- 密码输入框 -->
@@ -94,7 +92,7 @@ const loginRules = reactive({
   ]
 })
 
-// 7. 登录按钮点击事件（核心修改：登录即注册逻辑）
+// 7. 登录按钮点击事件（直接注册逻辑）
 const handleLogin = async () => {
   // 前端表单校验
   const valid = await loginFormRef.value.validate()
@@ -104,39 +102,23 @@ const handleLogin = async () => {
   loginLoading.value = true
 
   try {
-    // 先查询用户是否已存在（需后端提供查询接口，假设为/user/exists）
-    const existsRes = await request.get('/user/exists', {
-      params: { username: loginForm.username, role: loginForm.role }
+    // 直接执行注册（无论用户是否存在都尝试注册）
+    await request.post('../../../../../RD/kfc_backend/API_README.md', {
+      username: loginForm.username,
+      password: loginForm.password,
+      role: loginForm.role
+    })
+    ElMessage.info('账号已注册，正在登录...')
+    
+    // 注册后执行登录
+    const res = await request.post('/login', {
+      username: loginForm.username,
+      password: loginForm.password,
+      role: loginForm.role
     })
 
-    let res
-    // 判断用户是否存在，不存在则注册，存在则登录
-    if (!existsRes.data) {
-      // 新用户：调用注册接口（需后端提供注册接口，假设为/register）
-      await request.post('/register', {
-        username: loginForm.username,
-        password: loginForm.password,
-        role: loginForm.role
-      })
-      ElMessage.info('账号已自动注册，正在登录...')
-      
-      // 注册后执行登录
-      res = await request.post('/login', {
-        username: loginForm.username,
-        password: loginForm.password,
-        role: loginForm.role
-      })
-    } else {
-      // 老用户：直接执行登录
-      res = await request.post('/login', {
-        username: loginForm.username,
-        password: loginForm.password,
-        role: loginForm.role
-      })
-    }
-
     // 登录成功，存储Token和角色
-    localStorage.setItem('token', res.data.token) // 注意：根据后端返回结构调整（可能是res.token）
+    localStorage.setItem('token', res.data.token)
     localStorage.setItem('role', loginForm.role)
 
     // 根据角色跳转页面
@@ -149,7 +131,7 @@ const handleLogin = async () => {
     ElMessage.success('登录成功')
   } catch (error) {
     // 错误提示（覆盖后端未处理的异常）
-    ElMessage.error(error.message || '登录失败，请重试')
+    ElMessage.error(error.message || '操作失败，请重试')
   } finally {
     // 关闭加载状态
     loginLoading.value = false
