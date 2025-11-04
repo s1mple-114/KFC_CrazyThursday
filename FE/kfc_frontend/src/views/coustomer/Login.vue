@@ -103,7 +103,7 @@ const handleLogin = async () => {
 
   try {
     // 直接执行注册（无论用户是否存在都尝试注册）
-    await request.post('../../../../../RD/kfc_backend/API_README.md', {
+    await request.post('POST /api/auth/users/login/', {
       username: loginForm.username,
       password: loginForm.password,
       role: loginForm.role
@@ -111,7 +111,7 @@ const handleLogin = async () => {
     ElMessage.info('账号已注册，正在登录...')
     
     // 注册后执行登录
-    const res = await request.post('/login', {
+    const res = await request.post('POST /api/auth/users/login/', {
       username: loginForm.username,
       password: loginForm.password,
       role: loginForm.role
