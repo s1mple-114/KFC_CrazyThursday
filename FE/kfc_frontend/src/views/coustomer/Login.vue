@@ -62,6 +62,8 @@
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
+
+
 // request引入
 import request from '../../utils/request'
 // 1. 路由实例
@@ -102,38 +104,26 @@ const handleLogin = async () => {
   loginLoading.value = true
 
   try {
-    // 直接执行注册（无论用户是否存在都尝试注册）
-    await request.post('/api/auth/users/login', {
-      username: loginForm.username,
-      password: loginForm.password,
-      role: loginForm.role
-    })
-    ElMessage.info('账号已注册，正在登录...')
-    
-    // 注册后执行登录
-    const res = await request.post('/api/auth/users/login', {
+    // 调用后端登录接口（假设接口返回token字段）
+    const res = await request.post('/login/', {
       username: loginForm.username,
       password: loginForm.password,
       role: loginForm.role
     })
 
-    // 登录成功，存储Token和角色
-    localStorage.setItem('token', res.data.token)
+    // 存储Token到本地（后端返回的token字段）
+    localStorage.setItem('token', res.token) 
     localStorage.setItem('role', loginForm.role)
 
-    // 根据角色跳转页面
     if (loginForm.role === 'customer') {
-      router.push('/Menu')
+      router.push('/menu')
     } else {
-      router.push('../staff/order')
+      router.push('/staff/order')
     }
-
     ElMessage.success('登录成功')
   } catch (error) {
-    // 错误提示（覆盖后端未处理的异常）
-    ElMessage.error(error.message || '操作失败，请重试')
+    // 错误由request拦截器处理
   } finally {
-    // 关闭加载状态
     loginLoading.value = false
   }
 }

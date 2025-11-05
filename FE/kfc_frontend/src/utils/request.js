@@ -1,34 +1,47 @@
-import axios from 'axios';
+import axios from 'axios'
+import { ElMessage } from 'element-plus'
+import router from '../router'
 
-// 创建axios实例
-const service = axios.create({
-  baseURL: 'https://wkpgptfg-8000.asse.devtunnels.ms', // 后端接口基础地址
-  timeout: 5000 // 请求超时时间
-});
+const request = axios.create({
+  baseURL: 'https://wkpgptfg-8000.asse.devtunnels.ms/', // 后端地址已修改
+  timeout: 30000
+})
 
-// 请求拦截器：添加Token到请求头
-service.interceptors.request.use(
-  config => {
-    const token = localStorage.getItem('token');
+// 请求拦截器：携带DRF Token（格式为 "Token {token}"）
+request.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token')
     if (token) {
-      config.headers['Authorization'] = `Bearer ${token}`; // 根据后端要求的认证格式设置，这里假设是Bearer Token
+      // 关键修改 改为Token
+      config.headers.Authorization = `Token ${token}`
     }
-    return config;
+    return config
   },
-  error => {
-    return Promise.reject(error);
+  (error) => {
+    return Promise.reject(error)
   }
-);
+)
 
-// 响应拦截器：处理通用响应逻辑
-service.interceptors.response.use(
-  response => {
-    return response.data;
+// 响应拦截器保持不变（处理错误和Token过期）
+request.interceptors.response.use(
+  (response) => {
+    return response.data
   },
-  error => {
-    // 可以在这里统一处理错误，比如Token过期跳转登录页等
-    return Promise.reject(error);
+  (error) => {
+    if (error.response) {
+      if (error.response.status === 401) {
+        localStorage.removeItem('token')
+        localStorage.removeItem('role')
+        router.push('/login')
+        ElMessage.error('登录已过期，请重新登录')
+      } else {
+        ElMessage.error(error.response.data.message || '操作失败')
+      }
+    } else {
+      ElMessage.error('网络错误')
+    }
+    return Promise.reject(error)
   }
-);
+)
 
-export default service;
+export default request
