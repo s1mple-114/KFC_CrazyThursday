@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from rest_framework import viewsets, filters
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticatedOrReadOnly ,IsAuthenticated
+# from rest_framework.permissions import AllowAny
 from user.permissions import IsStaffUser  # 导入“仅店员”权限类
 from .models import Product
 from .serializers import ProductSerializer
@@ -8,7 +9,7 @@ from .serializers import ProductSerializer
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    # permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['name', 'category']
     ordering_fields = ['price', 'created_at']
