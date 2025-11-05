@@ -12,7 +12,7 @@
         label-width="80px"
         class="login-form"
       >
-        <!-- 用户名输入框 -->
+        <!-- 用户名输入框,用prop向子组件传递信号，以下相同 -->
         <el-form-item label="用户名" prop="username">
           <el-input 
             v-model="loginForm.username" 
@@ -20,13 +20,13 @@
             placeholder="请输入用户名" 
           />
         </el-form-item>
-        <!-- 密码输入框 -->
+        <!-- 密码输入框,同时进行双向绑定,用缩写的v-on v-bind表示-->
         <el-form-item label="密码" prop="password">
           <el-input 
             v-model="loginForm.password" 
             type="password" 
             placeholder="请输入密码" 
-            prefix-icon="Lock"
+            prefix-icon="Lock"   
             :show-password="showPwd"
             @click:icon="showPwd = !showPwd"
           />
@@ -78,7 +78,7 @@ const loginForm = reactive({
   password: '',
   role: ''
 })
-// 6. 表单验证规则
+// 6. 制作表单上的文字，检查是否填写，如果没有就输入文字，失去焦点时再次检查，整体用reactive包装让规则对象变成动态响应式
 const loginRules = reactive({
   username: [
     { required: true, message: '请输入用户名', trigger: 'blur' }
@@ -103,7 +103,7 @@ const handleLogin = async () => {
 
   try {
     // 直接执行注册（无论用户是否存在都尝试注册）
-    await request.post('../../../../../RD/kfc_backend/API_README.md', {
+    await request.post('/api/auth/users/login', {
       username: loginForm.username,
       password: loginForm.password,
       role: loginForm.role
@@ -111,7 +111,7 @@ const handleLogin = async () => {
     ElMessage.info('账号已注册，正在登录...')
     
     // 注册后执行登录
-    const res = await request.post('/login', {
+    const res = await request.post('/api/auth/users/login', {
       username: loginForm.username,
       password: loginForm.password,
       role: loginForm.role
