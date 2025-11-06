@@ -84,11 +84,11 @@ Content-Type: application/json
 GET http://localhost:8000/api/orders/orders/2/
 
 ### 13.更新订单状态
-POST http://localhost:8000/api/orders/orders/1/update_status/
+POST http://localhost:8000/api/orders/orders/2/update_status/
 Content-Type: application/json
 
 {
-  "status": "confirmed"
+  "status": "PAID"  
 }
 
 ### 14.获取所有订单（员工/管理员）
@@ -105,7 +105,7 @@ POST http://localhost:8000/api/order-items/order-items/
 Content-Type: application/json
 
 {
-  "order": 1,
+  "order": 3,
   "product": 1,
   "quantity": 2,
   "price": "25.00"
