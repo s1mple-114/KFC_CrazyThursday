@@ -5,6 +5,12 @@
  认证方式：Session认证（登录后自动保存cookie）  ----组长留言：孩子们报错401就是这个Session干的，我已经改成Token认证了
 -          Token认证（登陆后返回Token）
 
+### 注意事项：
+1. 支付方式字段使用大写：ALIPAY, WECHAT, CREDIT_CARD
+2. 订单状态使用大写：PENDING, PAID, COMPLETED
+3. Token认证：需要在Header中添加 Authorization: Token {token}
+
+
 ## 快速开始
 #KFC后端API完整接口列表
 ### 1. 用户注册
