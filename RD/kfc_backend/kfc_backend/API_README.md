@@ -74,7 +74,7 @@ POST http://localhost:8000/api/orders/orders/
 Content-Type: application/json
 
 {
-    "payment_method": ""ALIPAY,
+    "payment_method": "ALIPAY",
     "total_amount": 199.99,
     "shipping_address": "测试收货地址"
     
