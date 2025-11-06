@@ -28,7 +28,7 @@ Content-Type: application/json
   "password": "test123456"
 }
 
-### 3.用户登出
+### 3.用户登出（token）
 
 POST http://localhost:8000/api/auth/users/logout/
 
@@ -74,23 +74,14 @@ POST http://localhost:8000/api/orders/orders/
 Content-Type: application/json
 
 {
-  "total_amount": "68.00",
-  "items": [
-    {
-      "product": 1,
-      "quantity": 2,
-      "price": "25.00"
-    },
-    {
-      "product": 3,
-      "quantity": 1,
-      "price": "18.00"
-    }
-  ]
+    "payment_method": ""ALIPAY,
+    "total_amount": 199.99,
+    "shipping_address": "测试收货地址"
+    
 }
 
 ### 12.获取订单详情
-GET http://localhost:8000/api/orders/orders/1/
+GET http://localhost:8000/api/orders/orders/2/
 
 ### 13.更新订单状态
 POST http://localhost:8000/api/orders/orders/1/update_status/
