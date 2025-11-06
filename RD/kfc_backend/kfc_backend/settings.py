@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # 新增3个APP
+    # 新增4个APP
     'user',
     'product',
     'order',
@@ -143,7 +143,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication', # Token  认证
     ],
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
+       'rest_framework.permissions.AllowAny', 
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 20
