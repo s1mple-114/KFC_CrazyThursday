@@ -6,7 +6,7 @@
 -          Token认证（登陆后返回Token）
 
 ### 注意事项：
-1. 支付方式字段使用大写：ALIPAY, WECHAT, CREDIT_CARD
+1. 支付方式字段使用大写：ALIPAY, WECHAT, CARD
 2. 订单状态使用大写：PENDING, PAID, COMPLETED
 3. Token认证：需要在Header中添加 Authorization: Token {token}
 
@@ -18,10 +18,10 @@ POST http://localhost:8000/api/auth/users/register/
 Content-Type: application/json
 
 {
-  "username": "newuser",
-  "password": "password123",
-  "email": "user@example.com",
-  "phone": "13800000000",
+  "username": "testuser123",
+  "password": "test123456",
+  "email": "test123@example.com",
+  "phone": "13812345678",
   "role": "customer"
 }
 
@@ -34,18 +34,22 @@ Content-Type: application/json
   "password": "test123456"
 }
 
-### 3.用户登出（token）
+### 3.用户登出
 
 POST http://localhost:8000/api/auth/users/logout/
+认证 ：需要Token认证
 
 ### 4.获取用户列表（管理员）
 GET http://localhost:8000/api/auth/users/
 
 ### 5. 获取所有产品
 GET http://localhost:8000/api/products/products/
+认证 ：需要Token认证
 
 ### 6. 按分类筛选产品
 GET http://localhost:8000/api/products/products/?category=burger
+参数 ：category=burger（URL查询参数） 
+认证 ：需要Token认证
 
 ### 7. 创建产品（员工/管理员）
 POST http://localhost:8000/api/products/products/
@@ -74,10 +78,12 @@ DELETE http://localhost:8000/api/products/products/1/
 
 ### 10.获取我的订单
 GET http://localhost:8000/api/orders/orders/
+认证 ：需要Token认证
 
 ### 11.创建订单
 POST http://localhost:8000/api/orders/orders/
 Content-Type: application/json
+认证 ：需要Token认证
 
 {
     "payment_method": "ALIPAY",
@@ -88,10 +94,12 @@ Content-Type: application/json
 
 ### 12.获取订单详情
 GET http://localhost:8000/api/orders/orders/2/
+认证 ：需要Token认证
 
 ### 13.更新订单状态
 POST http://localhost:8000/api/orders/orders/2/update_status/
 Content-Type: application/json
+认证 ：需要Token认证
 
 {
   "status": "PAID"  
@@ -109,9 +117,10 @@ GET http://localhost:8000/api/order-items/order-items/1/
 ### 17.创建订单项
 POST http://localhost:8000/api/order-items/order-items/
 Content-Type: application/json
+认证 ：需要Token认证
 
 {
-  "order": 3,
+  "order": 4,
   "product": 1,
   "quantity": 2,
   "price": "25.00"
