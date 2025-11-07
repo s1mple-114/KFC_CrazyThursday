@@ -103,7 +103,7 @@ const allProducts = ref([])
 const getProductList = async () => {
   try {
     loading.value = true
-    const res = await request.get('products/products/')
+    const res = await request.get('https://wkpgptfg-8000.asse.devtunnels.ms/api/products/products/')
     if (Array.isArray(res.data)) {
       throw new Error('接口返回格式错误，不是数组')
     }
