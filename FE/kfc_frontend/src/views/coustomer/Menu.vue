@@ -103,17 +103,51 @@ const getProductList = async () => {
     loading.value = true
     console.log('开始请求接口...')
     
-    // 关键：使用完整接口地址（确保能获取到数据）
+    // 使用相对路径，因为request.js已设置baseURL为'/api'
     const res = await request.get('/products/products/')
     
-    // 打印响应确认结构
-    console.log('接口返回数据：', res)
+    // 打印响应确认结构 - 详细调试
+    console.log('=== 响应调试信息 ===')
+    console.log('响应对象类型:', typeof res)
+    console.log('是否为数组:', Array.isArray(res))
+    console.log('响应对象结构:', res)
+    console.log('响应对象长度:', res ? Object.keys(res).length : 'undefined')
     
-    // 验证返回是否为数组
-    if (!Array.isArray(res)) {
-  throw new Error('接口返回格式错误，不是数组')
-}
-allProducts.value = res.map((item) => ({
+    // 健壮的响应处理
+    let productsArray = []
+    
+    // 处理不同可能的响应格式
+    if (Array.isArray(res)) {
+      // 如果直接是数组
+      productsArray = res
+      console.log('直接获取到数组，长度:', res.length)
+    } else if (res && Array.isArray(res.results)) {
+      // 如果是包含results数组的对象
+      productsArray = res.results
+      console.log('从results字段获取数组，长度:', res.results.length)
+    } else if (res && typeof res === 'object') {
+      // 尝试其他可能的字段
+      console.log('响应是对象，尝试查找数据数组...')
+      console.log('对象键:', Object.keys(res))
+      
+      // 如果对象只有一个数组类型的键，可能就是数据
+      for (const key in res) {
+        if (Array.isArray(res[key])) {
+          productsArray = res[key]
+          console.log(`从${key}字段获取数组，长度:`, res[key].length)
+          break
+        }
+      }
+    }
+    
+    // 验证是否获取到了数据
+    if (productsArray.length === 0) {
+      console.warn('未找到商品数据，响应可能不是预期格式')
+      // 不抛出错误，而是显示空数据
+      allProducts.value = []
+    } else {
+      console.log('成功获取商品数据，开始处理...')
+      allProducts.value = productsArray.map((item) => ({
   id: item.id,
   name: item.name || '未知商品',
   price: item.price || '0.00',
