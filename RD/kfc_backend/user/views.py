@@ -44,7 +44,7 @@ class UserViewSet(viewsets.ModelViewSet):
                 "user": UserSerializer(user).data,
                 "message": "登录成功"
             }, status=status.HTTP_200_OK)
-        return Response({"message":"登录失败"},serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"message":"登录失败","errors":serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
     # 【新增：补全register接口，并配置匿名访问】
     @action(
@@ -65,7 +65,7 @@ class UserViewSet(viewsets.ModelViewSet):
                 "token": token.key,
                 "message": "注册成功"
             }, status=status.HTTP_201_CREATED)
-        return Response({"message":"注册失败"},serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"message":"注册失败","errors":serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=False, methods=['post'])
     def logout(self, request):
