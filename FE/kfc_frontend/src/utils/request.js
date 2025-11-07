@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
+import router from '../router/index.js'
 
 // 错误修正：创建 axios 实例应使用 axios.create()，而非 axios.post()
 const request = axios.create({
@@ -40,7 +41,7 @@ request.interceptors.response.use(
         // 401 未授权：清除本地存储的 token 和角色，跳转至登录页
         localStorage.removeItem('token')
         localStorage.removeItem('role')
-        router.push('/api/auth/users/login/')
+        router.push('/login')
         ElMessage.error('登录已过期，请重新登录')
       } else if (status === 400) {
         // 400 错误请求：通常是参数错误，显示后端返回的具体信息

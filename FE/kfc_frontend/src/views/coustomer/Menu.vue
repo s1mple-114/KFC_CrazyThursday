@@ -7,7 +7,7 @@
         :key="index"
         :class="activeCategory === category ? 'active' : ''"
         @click="activeCategory = category"
-        size="small"
+        size="medium"
       >
         {{ category }}
       </el-button>
@@ -65,15 +65,13 @@ import Navbar from '../../components/Navbar.vue'
 import request from '../../utils/request'
 import { useCartStore } from '../../store/cartStore'
 
-
-
 // 1. 分类映射严格匹配后端实际返回值（汉堡为"BURGER"单数）
 const categoryMap = {
   '全部': '',
   '汉堡': 'BURGER',  // 匹配数据中的"BURGER"
-  
+  '炸鸡': 'FOOD',
   '饮品': 'DRINK',   // 匹配数据中的"DRINK"
-  
+  '甜点': 'DESSERT'
 }
 
 // 2. 筛选逻辑
