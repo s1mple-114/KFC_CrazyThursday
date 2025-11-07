@@ -100,24 +100,29 @@ const activeCategory = ref('全部')
 const allProducts = ref([])
 
 // 4. 获取商品列表（适配对象+数组结构）
+// 在getProductList中赋值时，对商品字段做格式化：
 const getProductList = async () => {
   try {
     loading.value = true
-    const res = await request.get('https://wkpgptfg-8000.asse.devtunnels.ms/api/products/products/')
-    if (Array.isArray(res.data)) {
-      throw new Error('接口返回格式错误，不是数组')
+    const res = await request.get('/product')
+    if (Array.isArray(res)) {
+      // 对每个商品做字段格式化
+      allProducts.value = res.map(item => ({
+        id: item.id,
+        name: item.name || '未知商品',
+        price: Number(item.price) || 0.00, // 转数字
+        category: item.category || '未知分类',
+        description: item.description || '无描述',
+        image: item.image,
+        is_available: item.is_available !== undefined ? item.is_available : false, // 对应后端的is_available
+        created_time: item.created_time
+      }));
+    } else {
+      allProducts.value = [];
     }
-    allProducts.value = res.data.map((item) => ({
-      id: item.id,
-      name: item.name || '未知商品',
-      price: Number(item.price) || 0.00,
-      category: item.category || '未知分类',
-      description: item.description || '无描述',
-      image: item.image,
-      is_available: item.is_available !== undefined ? item.is_available : false,
-    }))
-    console.log(`加载成功，共${allProducts.value.length}件商品`)
-  }  finally {
+  } catch (error) {
+    allProducts.value = [];
+  } finally {
     loading.value = false
   }
 }

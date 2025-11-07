@@ -64,6 +64,14 @@ import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 // request引入
 import request from '../../utils/request'
+const loginRules = reactive({
+  username: [
+    { required: true, message: '请输入用户名', trigger: 'blur' }
+  ],
+  password: [
+    { required: true, message: '请输入密码', trigger: 'blur' }
+  ]
+})
 // 1. 路由实例
 const router = useRouter()
 // 2. 表单引用（用于表单验证）

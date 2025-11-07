@@ -4,7 +4,7 @@ import { ElMessage } from 'element-plus'
 // 错误修正：创建 axios 实例应使用 axios.create()，而非 axios.post()
 const request = axios.create({
   baseURL: '/api', // 后端基础地址
-  timeout: 60000 // 请求超时时间（30秒）
+  timeout: 30000 // 请求超时时间（30秒）
 })
 
 // 请求拦截器：携带 DRF Token（格式为 "Token {token}"）
