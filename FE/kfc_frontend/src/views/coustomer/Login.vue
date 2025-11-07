@@ -16,7 +16,7 @@
         <el-form-item label="用户名" prop="username">
           <el-input 
             v-model="loginForm.username" 
-            prefix-icon="User"
+            prefix-icon="user"
             placeholder="请输入用户名" 
           />
         </el-form-item>
@@ -105,7 +105,7 @@ const handleLogin = async () => {
 
   try {
     // 调用后端登录接口（假设接口返回token字段）
-    const res = await request.post('/login/', {
+    const res = await request.post('auth/user/users/login/', {
       username: loginForm.username,
       password: loginForm.password,
       role: loginForm.role
