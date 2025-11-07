@@ -19,12 +19,12 @@ class UserViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.action in ['register', 'login']:
             return [AllowAny()]  # 注册和登录不需要认证
-        if self.action in ["list", "retrieve"]:
-            return [IsOwnerOrStaff()]
-        elif self.action in ["update", "partial_update"]:
-            return [IsOwnerOrStaff()]
+        elif self.action == "list":
+            return [IsStaffUser()]  # 用户列表仅允许员工或管理员访问
+        elif self.action in ["retrieve", "update", "partial_update"]:
+            return [IsOwnerOrStaff()]  # 查看/修改用户信息需要是本人或员工/管理员
         elif self.action == "destroy":
-            return [IsStaffUser()] 
+            return [IsStaffUser()]  # 删除用户仅允许员工或管理员
         return [IsAuthenticated()]  # 其他操作需要登录
 
     # 【修改1：给login接口添加authentication_classes，关闭认证拦截】

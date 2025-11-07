@@ -24,6 +24,6 @@ class ProductViewSet(viewsets.ModelViewSet):
         # 场景：商品上架/下架/修改（只有店员能操作）
         if self.action in ['create', 'update', 'destroy']:
             return [IsStaffUser()]
-        # 场景：浏览商品（所有登录用户都能看）
-        return [IsAuthenticated()]
+        # 场景：浏览商品（公开接口，无需登录）
+        return [AllowAny()]
 # Create your views here.
