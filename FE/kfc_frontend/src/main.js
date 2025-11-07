@@ -13,7 +13,7 @@ import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 // 顾客 Token
 localStorage.setItem('token', '29c62eecd6525a5df397a102b03d54d0267066d4');
 // 店员 Token
-localStorage.setItem('token', 'd2798ea6c99a9baf3d6f500780b38f67b8b7fe2e');
+localStorage.setItem('token', '433cbc683353096328dbff1b217b2a947016af24');
 
 const app = createApp(App)
 // 全局注册Element图标

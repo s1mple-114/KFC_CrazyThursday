@@ -1,14 +1,19 @@
 import { createRouter, createWebHistory } from 'vue-router'
-// 引入页面组件
+// 导入Login和Menu组件
 import Login from '../views/coustomer/Login.vue'
-// 后面会加“菜单页”“订单页”等，先放登录页
+import Menu from '../views/coustomer/Menu.vue'
 
-// 路由规则：路径对应页面
+// 路由规则：包含登录页和菜单页
 const routes = [
   {
-    path: '/',          // 默认路径（打开项目先显示登录页）
+    path: '/',
     name: 'Login',
     component: Login
+  },
+  {
+    path: '/menu', // 菜单页的访问路径
+    name: 'Menu',
+    component: Menu
   }
 ]
 

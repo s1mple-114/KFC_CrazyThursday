@@ -80,49 +80,50 @@ const loginForm = reactive({
   password: '',
   role: ''
 })
-// 6. 制作表单上的文字，检查是否填写，如果没有就输入文字，失去焦点时再次检查，整体用reactive包装让规则对象变成动态响应式
-const loginRules = reactive({
-  username: [
-    { required: true, message: '请输入用户名', trigger: 'blur' }
-  ],
-  password: [
-    { required: true, message: '请输入密码', trigger: 'blur' },
-    { min: 1, message: '密码至少1位', trigger: 'blur' }
-  ],
-  role: [
-    { required: true, message: '请选择角色', trigger: 'change' }
-  ]
-})
-
-// 7. 登录按钮点击事件（直接注册逻辑）
 const handleLogin = async () => {
   // 前端表单校验
-  const valid = await loginFormRef.value.validate()
-  if (!valid) return
+  try {
+    await loginFormRef.value.validate()
+  } catch (error) {
+    return // 校验失败，终止执行
+  }
 
-  // 显示加载状态
   loginLoading.value = true
 
   try {
-    // 调用后端登录接口（假设接口返回token字段）
-    const res = await request.post('auth/user/users/login/', {
+    // 1. 先尝试注册
+    await request.post('/auth/users/register/', {
+      username: loginForm.username,
+      password: loginForm.password,
+      role: loginForm.role
+    })
+    ElMessage.success('注册成功，正在登录...')
+  } catch (error) {
+    // 2. 注册失败：判断是否是“用户已存在”错误（根据后端实际返回调整）
+    if (!(error.response?.data?.message?.includes('已存在'))) {
+      // 非“已存在”错误（如注册参数错误），直接终止并显示错误（拦截器已处理提示）
+      loginLoading.value = false
+      return
+    }
+    // 若为“已存在”错误，继续执行登录流程
+    ElMessage.info('用户已存在，直接登录...')
+  }
+
+  try {
+    // 3. 执行登录（无论注册成功还是用户已存在，都走到登录步骤）
+    const loginRes = await request.post('/auth/users/login/', {
       username: loginForm.username,
       password: loginForm.password,
       role: loginForm.role
     })
 
-    // 存储Token到本地（后端返回的token字段）
-    localStorage.setItem('token', res.token) 
+    // 登录成功处理
+    localStorage.setItem('token', loginRes.token)
     localStorage.setItem('role', loginForm.role)
-
-    if (loginForm.role === 'customer') {
-      router.push('/menu')
-    } else {
-      router.push('/staff/order')
-    }
     ElMessage.success('登录成功')
+    router.push(loginForm.role === 'customer' ? '/Menu' : '/staff/order')
   } catch (error) {
-    // 错误由request拦截器处理
+    // 登录失败（如密码错误等，拦截器已处理提示）
   } finally {
     loginLoading.value = false
   }

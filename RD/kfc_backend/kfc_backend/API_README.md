@@ -1,7 +1,7 @@
 # KFC后端API使用说明
 
 ## 基础信息
-- 后端地址：`http://192.168.x.x:8000/api/`
+- 后端地址：`https://wkpgptfg-8000.asse.devtunnels.ms/`
 - 认证方式：Session认证（登录后自动保存cookie）
 -          Token认证（登陆后返回Token）
 
