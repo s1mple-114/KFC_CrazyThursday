@@ -111,20 +111,18 @@ const getProductList = async () => {
     console.log('results数组内容：', res.data.results)
     
     // 验证results数组是否存在
-    if (!res.data || !Array.isArray(res.data.results)) {
-      throw new Error('接口返回格式错误，results不是数组')
-    }
-    
-    // 解析商品列表（直接从results数组读取）
-    allProducts.value = res.data.results.map((item) => ({
-      id: item.id,
-      name: item.name || '未知商品',
-      price: item.price || '0.00',
-      category: item.category || '未知分类',
-      description: item.description || '无描述',
-      image: item.image,
-      is_available: item.is_available !== undefined ? item.is_available : false
-    }))
+    if (!Array.isArray(res.data)) {
+  throw new Error('接口返回格式错误，不是数组')
+}
+allProducts.value = res.data.map((item) => ({
+  id: item.id,
+  name: item.name || '未知商品',
+  price: item.price || '0.00',
+  category: item.category || '未知分类',
+  description: item.description || '无描述',
+  image: item.image,
+  is_available: item.is_available !== undefined ? item.is_available : false
+}))
     
     console.log('解析成功，商品数量：', allProducts.value.length)
     ElMessage.success(`加载成功，共${allProducts.value.length}件商品`)
