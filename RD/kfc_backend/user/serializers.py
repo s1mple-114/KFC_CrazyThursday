@@ -9,11 +9,17 @@ class UserSerializer(serializers.ModelSerializer):
         read_only_fields = ('id',)
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
+    
     password = serializers.CharField(write_only=True)
     
     class Meta:
         model = User
-        fields = ('username','password','role')
+        fields = ('username', 'email', 'password', 'phone', 'role')
+    def validate_username(self, value):
+        # 仅新增：校验用户名是否已存在
+        if User.objects.filter(username=value).exists():
+            raise serializers.ValidationError('用户已存在')
+        return value  # 返回校验后的用户名
     
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)

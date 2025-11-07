@@ -12,7 +12,7 @@
         label-width="80px"
         class="login-form"
       >
-        <!-- 用户名输入框,用prop向子组件传递信号，以下相同 -->
+        <!-- 用户名输入框 -->
         <el-form-item label="用户名" prop="username">
           <el-input 
             v-model="loginForm.username" 
@@ -20,13 +20,13 @@
             placeholder="请输入用户名" 
           />
         </el-form-item>
-        <!-- 密码输入框,同时进行双向绑定,用缩写的v-on v-bind表示-->
+        <!-- 密码输入框 -->
         <el-form-item label="密码" prop="password">
           <el-input 
             v-model="loginForm.password" 
             type="password" 
             placeholder="请输入密码" 
-            prefix-icon="Lock"   
+            prefix-icon="Lock"
             :show-password="showPwd"
             @click:icon="showPwd = !showPwd"
           />
@@ -62,8 +62,6 @@
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-
-
 // request引入
 import request from '../../utils/request'
 // 1. 路由实例
@@ -125,6 +123,7 @@ const handleLogin = async () => {
   } catch (error) {
     // 登录失败（如密码错误等，拦截器已处理提示）
   } finally {
+    // 关闭加载状态
     loginLoading.value = false
   }
 }

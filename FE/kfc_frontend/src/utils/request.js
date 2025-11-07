@@ -1,6 +1,4 @@
 import axios from 'axios'
-import { ElMessage } from 'element-plus'
-import router from '../router'
 
 // 错误修正：创建 axios 实例应使用 axios.create()，而非 axios.post()
 const request = axios.create({
