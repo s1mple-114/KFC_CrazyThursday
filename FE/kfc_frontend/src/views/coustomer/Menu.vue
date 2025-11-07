@@ -1,9 +1,6 @@
 <template>
   <div class="menu-container">
-    <!-- 引入导航栏组件 -->
     <Navbar />
-
-    <!-- 分类导航 -->
     <div class="category-tabs">
       <el-button 
         v-for="(category, index) in categories" 
@@ -15,39 +12,35 @@
         {{ category }}
       </el-button>
     </div>
-
-    <!-- 商品列表（加载中状态） -->
     <el-skeleton v-if="loading" row-count="6" :columns="3" style="margin-top: 20px" />
-
-    <!-- 商品列表（加载完成） -->
     <div class="product-list" v-else>
-      <!-- 无商品时提示 -->
       <div class="no-product" v-if="filteredProducts.length === 0">
         <p>暂无该分类商品～</p>
+        <p style="font-size: 12px; color: #999;">
+          调试：当前分类{{ activeCategory }}，匹配标识{{ categoryMap[activeCategory] }}，总商品数{{ allProducts.length }}
+        </p>
       </div>
-      <!-- 商品卡片 -->
       <el-card 
         v-for="product in filteredProducts" 
-        :key="product.id"
+        :key="product.id"  
         class="product-card"
         shadow="hover"
       >
-        <!-- 商品图片（用占位图，实际项目替换为后端返回的图片地址） -->
         <img 
-          :src="product.imgUrl || 'https://picsum.photos/300/200'" 
+          :src="product.image || 'https://picsum.photos/300/200'" 
           alt="商品图片" 
           class="product-img"
         >
         <div class="product-info">
           <h3 class="product-name">{{ product.name }}</h3>
+          <p class="product-desc">{{ product.description }}</p>
           <div class="product-bottom">
-            <span class="product-price">¥{{ product.price.toFixed(2) }}</span>
-            <!-- 上架商品显示"加入购物车"，下架显示"已下架" -->
+            <span class="product-price">¥{{ product.price }}</span>
             <el-button 
               type="primary" 
               size="small"
               @click="addToCart(product)"
-              v-if="product.status === '上架'"
+              v-if="product.is_available"
             >
               加入购物车
             </el-button>
@@ -72,52 +65,96 @@ import Navbar from '../../components/Navbar.vue'
 import request from '../../utils/request'
 import { useCartStore } from '../../store/cartStore'
 
-// 1. 购物车状态
-const cartStore = useCartStore()
-// 2. 加载状态（商品未加载完时显示骨架屏）
-const loading = ref(true)
-// 3. 所有分类（和后端商品分类对应）
-const categories = ref(['全部', '汉堡', '炸鸡', '饮品', '甜点'])
-// 4. 当前激活的分类
-const activeCategory = ref('全部')
-// 5. 后端返回的所有商品列表
-const allProducts = ref([])
+// 1. 分类映射严格匹配后端实际返回值（汉堡为"BURGER"单数）
+const categoryMap = {
+  '全部': '',
+  '汉堡': 'BURGER',  // 匹配数据中的"BURGER"
+  '炸鸡': 'FOOD',
+  '饮品': 'DRINK',   // 匹配数据中的"DRINK"
+  '甜点': 'DESSERT'
+}
 
-// 6. 筛选当前分类的商品（计算属性）
+// 2. 筛选逻辑
 const filteredProducts = computed(() => {
-  if (activeCategory.value === '全部') {
+  const currentCategory = categoryMap[activeCategory.value]
+  console.log('筛选调试：', {
+    前端分类: activeCategory.value,
+    后端匹配值: currentCategory,
+    商品总数: allProducts.value.length,
+    所有商品分类: allProducts.value.map(item => item.category)
+  })
+
+  if (!currentCategory) {
     return allProducts.value
   }
-  return allProducts.value.filter(product => product.category === activeCategory.value)
+  return allProducts.value.filter(product => product.category === currentCategory)
 })
 
-// 7. 从后端获取商品列表
+// 3. 状态定义
+const cartStore = useCartStore()
+const loading = ref(true)
+const categories = ref(['全部', '汉堡', '炸鸡', '饮品', '甜点'])
+const activeCategory = ref('全部')
+const allProducts = ref([])
+
+// 4. 获取商品列表（适配对象+数组结构）
 const getProductList = async () => {
   try {
     loading.value = true
-    // 调用后端商品列表接口（假设地址是/product）
-    const res = await request.get('/product')
-    allProducts.value = res.data // 后端返回的商品列表，格式需包含id/name/price/category/status/imgUrl
+    console.log('开始请求接口...')
+    
+    // 关键：使用完整接口地址（确保能获取到数据）
+    const res = await request.get('/products/products/')
+    
+    // 打印响应确认结构
+    console.log('接口返回完整数据：', res.data)
+    console.log('results数组内容：', res.data.results)
+    
+    // 验证results数组是否存在
+    if (!res.data || !Array.isArray(res.data.results)) {
+      throw new Error('接口返回格式错误，results不是数组')
+    }
+    
+    // 解析商品列表（直接从results数组读取）
+    allProducts.value = res.data.results.map((item) => ({
+      id: item.id,
+      name: item.name || '未知商品',
+      price: item.price || '0.00',
+      category: item.category || '未知分类',
+      description: item.description || '无描述',
+      image: item.image,
+      is_available: item.is_available !== undefined ? item.is_available : false
+    }))
+    
+    console.log('解析成功，商品数量：', allProducts.value.length)
+    ElMessage.success(`加载成功，共${allProducts.value.length}件商品`)
+
   } catch (error) {
-    // 错误已被request拦截器处理，这里不用额外操作
+    console.error('获取商品失败：', error.message)
+    ElMessage.error(`加载失败：${error.message}`)
   } finally {
     loading.value = false
   }
 }
 
-// 8. 添加商品到购物车
+// 5. 添加购物车逻辑
 const addToCart = (product) => {
-  cartStore.addToCart(product)
+  const productWithNumberPrice = {
+    ...product,
+    price: Number(product.price)
+  }
+  cartStore.addToCart(productWithNumberPrice)
   ElMessage.success(`已添加${product.name}到购物车～`)
 }
 
-// 9. 页面加载时获取商品数据
+// 6. 页面加载时请求数据
 onMounted(() => {
   getProductList()
 })
 </script>
 
 <style scoped>
+/* 样式部分保持不变 */
 .menu-container {
   max-width: 1200px;
   margin: 0 auto;
@@ -161,8 +198,19 @@ onMounted(() => {
 }
 .product-name {
   font-size: 16px;
+  margin-bottom: 5px;
+  flex: none;
+}
+.product-desc {
+  font-size: 14px;
+  color: #666;
   margin-bottom: 10px;
   flex: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp:2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 .product-bottom {
   display: flex;
