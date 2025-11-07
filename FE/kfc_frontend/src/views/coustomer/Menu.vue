@@ -107,14 +107,13 @@ const getProductList = async () => {
     const res = await request.get('/products/products/')
     
     // 打印响应确认结构
-    console.log('接口返回完整数据：', res.data)
-    console.log('results数组内容：', res.data.results)
+    console.log('接口返回数据：', res)
     
-    // 验证results数组是否存在
-    if (!Array.isArray(res.data)) {
+    // 验证返回是否为数组
+    if (!Array.isArray(res)) {
   throw new Error('接口返回格式错误，不是数组')
 }
-allProducts.value = res.data.map((item) => ({
+allProducts.value = res.map((item) => ({
   id: item.id,
   name: item.name || '未知商品',
   price: item.price || '0.00',
