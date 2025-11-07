@@ -65,7 +65,7 @@ class UserViewSet(viewsets.ModelViewSet):
                 "token": token.key,
                 "message": "注册成功"
             }, status=status.HTTP_201_CREATED)
-        return Response({"message":"注册失败","errors":serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"message":"注册失败,该用户已存在","errors":serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=False, methods=['post'])
     def logout(self, request):
