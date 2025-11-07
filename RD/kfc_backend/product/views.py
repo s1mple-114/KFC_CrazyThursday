@@ -1,18 +1,30 @@
 from django.shortcuts import render
-from rest_framework import viewsets, filters
+from rest_framework import viewsets, filters, mixins
 from rest_framework.permissions import IsAuthenticatedOrReadOnly ,IsAuthenticated
 from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
 from user.permissions import IsStaffUser  # 导入“仅店员”权限类
 from .models import Product
 from .serializers import ProductSerializer
 
-class ProductViewSet(viewsets.ModelViewSet):
+class ProductViewSet(mixins.ListModelMixin,
+                    mixins.RetrieveModelMixin,
+                    mixins.CreateModelMixin,
+                    mixins.UpdateModelMixin,
+                    mixins.DestroyModelMixin,
+                    viewsets.GenericViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     permission_classes = [AllowAny]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['name', 'category']
     ordering_fields = ['price', 'created_at']
+    pagination_class = None  # 取消分页
+    
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
     
     def get_queryset(self):
         queryset = Product.objects.filter(is_available=True)
@@ -20,6 +32,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         if category:
             queryset = queryset.filter(category=category)
         return queryset
+    
     def get_permissions(self):
         # 场景：商品上架/下架/修改（只有店员能操作）
         if self.action in ['create', 'update', 'destroy']:
