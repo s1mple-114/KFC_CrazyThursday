@@ -25,14 +25,15 @@ class ProductViewSet(mixins.ListModelMixin,
         queryset = self.filter_queryset(self.get_queryset())
         serializer = self.get_serializer(queryset, many=True)
         # 添加缓存控制头，禁止浏览器缓存响应
-        response = Response(serializer.data)
+        # 添加Content-Type确保中文正确显示
+        response = Response(serializer.data, content_type='application/json; charset=utf-8')
         response['Cache-Control'] = 'no-cache, no-store, must-revalidate'
         response['Pragma'] = 'no-cache'
         response['Expires'] = '0'
         return response
     
     def get_queryset(self):
-        queryset = Product.objects.filter(is_available=True)
+        queryset = Product.objects.all()
         category = self.request.query_params.get('category')
         if category:
             queryset = queryset.filter(category=category)
