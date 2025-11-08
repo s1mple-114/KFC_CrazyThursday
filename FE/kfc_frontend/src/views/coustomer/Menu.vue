@@ -100,24 +100,34 @@ const activeCategory = ref('全部')
 const allProducts = ref([])
 
 // 4. 获取商品列表（适配对象+数组结构）
+const error = ref(null)
 const getProductList = async () => {
   try {
     loading.value = true
+    error.value = null // 开始新请求前清空旧错误
     const res = await request.get('products/products/')
-    if (Array.isArray(res.data)) {
-      throw new Error('接口返回格式错误，不是数组')
+    if (!res || !Array.isArray(res.data)) { // 注意：axios返回的数据通常在res.data中
+      throw new Error('接口返回数据结构异常，期望得到数组')
     }
-    allProducts.value = res.data.map((item) => ({
-      id: item.id,
-      name: item.name || '未知商品',
-      price: Number(item.price) || 0.00,
-      category: item.category || '未知分类',
-      description: item.description || '无描述',
-      image: item.image,
-      is_available: item.is_available !== undefined ? item.is_available : false,
-    }))
-    console.log(`加载成功，共${allProducts.value.length}件商品`)
-  }  finally {
+    allProducts.value = res.data.map((item) => {
+      const price = parseFloat(item.price)
+      return {
+        id: item.id || Date.now() + Math.random(), // 为id也提供一个后备值
+        name: item.name?.trim() || '未知商品', 
+        price: isNaN(price) || price < 0 ? 0.00 : Number(price.toFixed(2)), 
+        category: item.category || '未知分类',
+        description: item.description || '暂无描述',
+        image: item.image,
+        is_available: Boolean(item.is_available)
+      }
+    })
+    
+    console.log(`商品加载成功，共 ${allProducts.value.length} 件商品`)
+  } catch (err) {
+    // 5. 完善错误处理，设置错误状态
+    error.value = `加载商品列表失败: ${err.message}`
+    console.error('获取商品数据时发生错误:', err)
+  } finally {
     loading.value = false
   }
 }
