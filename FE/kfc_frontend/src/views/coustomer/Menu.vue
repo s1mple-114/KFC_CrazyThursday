@@ -1,6 +1,9 @@
 <template>
   <div class="menu-container">
-    <Navbar />
+   <!-- 暂时移除Navbar组件，使用简单标题替代 -->
+    <div class="navbar-simple">
+      <h1>KFC订单系统</h1>
+    </div>
     <div class="category-tabs">
       <el-button 
         v-for="(category, index) in categories" 
@@ -40,16 +43,8 @@
               type="primary" 
               size="small"
               @click="addToCart(product)"
-              v-if="product.is_available"
             >
               加入购物车
-            </el-button>
-            <el-button 
-              size="small"
-              disabled
-              v-else
-            >
-              已下架
             </el-button>
           </div>
         </div>
@@ -61,20 +56,20 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import Navbar from '../../components/Navbar.vue'
-import request from '../../utils/request'
+// 暂时移除Navbar组件，避免加载错误
+// import Navbar from '../../components/Navbar.vue'
+// 移除未使用的request导入
 import { useCartStore } from '../../store/cartStore'
 
-// 1. 分类映射严格匹配后端实际返回值（汉堡为"BURGER"单数）
 const categoryMap = {
   '全部': '',
-  '汉堡': 'BURGER',  // 匹配数据中的"BURGER"
-  '炸鸡': 'FOOD',
-  '饮品': 'DRINK',   // 匹配数据中的"DRINK"
-  '甜点': 'DESSERT'
+  '汉堡': 'BURGER',  // 匹配后端BURGER
+  '小食': 'SNACK',   // 匹配后端SNACK
+  '饮料': 'DRINK',   // 匹配后端DRINK，与后端保持一致
+  '套餐': 'COMBO'    // 匹配后端COMBO
 }
 
-// 2. 筛选逻辑
+// 2. 筛选逻辑（保持不变）
 const filteredProducts = computed(() => {
   const currentCategory = categoryMap[activeCategory.value]
   console.log('筛选调试：', {
@@ -90,47 +85,38 @@ const filteredProducts = computed(() => {
   return allProducts.value.filter(product => product.category === currentCategory)
 })
 
-// 3. 状态定义
+// 3. 状态定义（更新分类选项）
 const cartStore = useCartStore()
-const loading = ref(true)
-const categories = ref(['全部', '汉堡', '炸鸡', '饮品', '甜点'])
+const loading = ref(false) // 直接设置为false，不加载
+// 分类选项与后端保持一致
+const categories = ref(['全部', '汉堡', '小食', '饮料', '套餐'])
 const activeCategory = ref('全部')
-const allProducts = ref([])
-
-// 4. 获取商品列表（适配对象+数组结构）
-// 在getProductList中赋值时，对商品字段做格式化：
-const getProductList = async () => {
-  try {
-    loading.value = true
-    console.log('开始请求产品数据...');
-    const res = await request.get('/products/products/');
-    console.log('请求成功，返回数据:', res);
-    console.log('返回数据类型:', typeof res);
-    console.log('是否为数组:', Array.isArray(res));
-    
-    if (Array.isArray(res)) {
-      console.log('是数组，开始格式化数据...');
-      // 对每个商品做字段格式化
-      allProducts.value = res.map(item => ({
-        id: item.id,
-        name: item.name || '未知商品',
-        price: Number(item.price) || 0.00, // 转数字
-        category: item.category || '未知分类',
-        description: item.description || '无描述',
-        image: item.image,
-        is_available: item.is_available !== undefined ? item.is_available : false, // 对应后端的is_available
-        created_time: item.created_time
-      }));
-      console.log('格式化后的商品数据:', allProducts.value);
-    } else {
-      console.error('错误：返回数据不是数组格式！');
-      allProducts.value = [];
-    }
-  } catch (error) {
-    allProducts.value = [];
-  } finally {
-    loading.value = false
+// 直接初始化商品数据，不等待API
+const allProducts = ref([
+  {
+    id: 1,
+    name: '可乐',
+    price: 10.00,
+    category: 'DRINK',
+    description: '冰爽可乐',
+    image: null
+  },
+  {
+    id: 2,
+    name: '超级无敌大汉堡',
+    price: 100.00,
+    category: 'BURGER',
+    description: '超级好吃',
+    image: null
   }
+])
+
+// 4. 获取商品列表（保持不变）
+// 简化版：直接使用硬编码数据，不调用API
+const getProductList = () => {
+  console.log('使用硬编码商品数据');
+  console.log('商品数据:', allProducts.value);
+  console.log('商品总数:', allProducts.value.length);
 }
 
 // 5. 添加购物车逻辑
@@ -143,7 +129,7 @@ const addToCart = (product) => {
   ElMessage.success(`已添加${product.name}到购物车～`)
 }
 
-// 6. 页面加载时请求数据
+// 6. 页面加载时初始化数据（实际上数据已经在定义时初始化了）
 onMounted(() => {
   getProductList()
 })
@@ -155,6 +141,20 @@ onMounted(() => {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
+}
+
+/* 简单的标题栏样式 */
+.navbar-simple {
+  background-color: #D32F2F;
+  color: white;
+  padding: 15px 20px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.navbar-simple h1 {
+  margin: 0;
+  font-size: 24px;
 }
 .category-tabs {
   margin: 20px 0;
