@@ -14,8 +14,6 @@ class Product(models.Model):
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)  # 分类
     description = models.TextField(blank=True)  # 描述（可选）
     image = models.ImageField(upload_to='products/', blank=True, null=True, verbose_name='产品图片')
-    
-    is_available = models.BooleanField(default=True,verbose_name='是否可用')  # 是否上架
     created_time = models.DateTimeField(auto_now_add=True)  # 创建时间
 
     # 后台显示商品名和价格
