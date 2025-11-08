@@ -7,7 +7,7 @@
         :key="index"
         :class="activeCategory === category ? 'active' : ''"
         @click="activeCategory = category"
-        size="small"
+        size="medium"
       >
         {{ category }}
       </el-button>
@@ -65,15 +65,13 @@ import Navbar from '../../components/Navbar.vue'
 import request from '../../utils/request'
 import { useCartStore } from '../../store/cartStore'
 
-
-
 // 1. 分类映射严格匹配后端实际返回值（汉堡为"BURGER"单数）
 const categoryMap = {
   '全部': '',
   '汉堡': 'BURGER',  // 匹配数据中的"BURGER"
-  
+  '炸鸡': 'FOOD',
   '饮品': 'DRINK',   // 匹配数据中的"DRINK"
-  
+  '甜点': 'DESSERT'
 }
 
 // 2. 筛选逻辑
@@ -100,33 +98,36 @@ const activeCategory = ref('全部')
 const allProducts = ref([])
 
 // 4. 获取商品列表（适配对象+数组结构）
-const error = ref(null)
+// 在getProductList中赋值时，对商品字段做格式化：
 const getProductList = async () => {
   try {
     loading.value = true
-    error.value = null // 开始新请求前清空旧错误
-    const res = await request.get('products/products/')
-    if (!res || !Array.isArray(res.data)) { // 注意：axios返回的数据通常在res.data中
-      throw new Error('接口返回数据结构异常，期望得到数组')
-    }
-    allProducts.value = res.data.map((item) => {
-      const price = parseFloat(item.price)
-      return {
-        id: item.id || Date.now() + Math.random(), // 为id也提供一个后备值
-        name: item.name?.trim() || '未知商品', 
-        price: isNaN(price) || price < 0 ? 0.00 : Number(price.toFixed(2)), 
-        category: item.category || '未知分类',
-        description: item.description || '暂无描述',
-        image: item.image,
-        is_available: Boolean(item.is_available)
-      }
-    })
+    console.log('开始请求产品数据...');
+    const res = await request.get('/products/products/');
+    console.log('请求成功，返回数据:', res);
+    console.log('返回数据类型:', typeof res);
+    console.log('是否为数组:', Array.isArray(res));
     
-    console.log(`商品加载成功，共 ${allProducts.value.length} 件商品`)
-  } catch (err) {
-    // 5. 完善错误处理，设置错误状态
-    error.value = `加载商品列表失败: ${err.message}`
-    console.error('获取商品数据时发生错误:', err)
+    if (Array.isArray(res)) {
+      console.log('是数组，开始格式化数据...');
+      // 对每个商品做字段格式化
+      allProducts.value = res.map(item => ({
+        id: item.id,
+        name: item.name || '未知商品',
+        price: Number(item.price) || 0.00, // 转数字
+        category: item.category || '未知分类',
+        description: item.description || '无描述',
+        image: item.image,
+        is_available: item.is_available !== undefined ? item.is_available : false, // 对应后端的is_available
+        created_time: item.created_time
+      }));
+      console.log('格式化后的商品数据:', allProducts.value);
+    } else {
+      console.error('错误：返回数据不是数组格式！');
+      allProducts.value = [];
+    }
+  } catch (error) {
+    allProducts.value = [];
   } finally {
     loading.value = false
   }
