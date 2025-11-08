@@ -147,8 +147,8 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
        'rest_framework.permissions.AllowAny', 
     ],
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 20
+    # 移除默认分页类，确保返回纯数组格式
+    'DEFAULT_PAGINATION_CLASS': None
 }
 
 
