@@ -1,9 +1,8 @@
 <template>
   <div class="menu-container">
-   <!-- 暂时移除Navbar组件，使用简单标题替代 -->
-    <div class="navbar-simple">
-      <h1>KFC订单系统</h1>
-    </div>
+    <!-- 恢复Navbar组件 -->
+    <Navbar />
+    <div class="content-wrapper">
     <div class="category-tabs">
       <el-button 
         v-for="(category, index) in categories" 
@@ -50,14 +49,15 @@
         </div>
       </el-card>
     </div>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
-// 暂时移除Navbar组件，避免加载错误
-// import Navbar from '../../components/Navbar.vue'
+// 导入Navbar组件
+import Navbar from '../../components/Navbar.vue'
 // 移除未使用的request导入
 import { useCartStore } from '../../store/cartStore'
 
@@ -143,18 +143,10 @@ onMounted(() => {
   padding: 0 20px;
 }
 
-/* 简单的标题栏样式 */
-.navbar-simple {
-  background-color: #D32F2F;
-  color: white;
-  padding: 15px 20px;
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-.navbar-simple h1 {
-  margin: 0;
-  font-size: 24px;
+.content-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
 }
 .category-tabs {
   margin: 20px 0;

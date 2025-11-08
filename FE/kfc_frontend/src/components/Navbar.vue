@@ -46,10 +46,60 @@
       <i class="el-icon-shopping-cart-empty" style="font-size: 40px; color: #ccc"></i>
       <p style="margin-top: 10px; color: #999">购物车是空的，快去选商品吧～</p>
     </div>
-    <!-- 购物车有商品（后续结合Pinia完善，这里先占位） -->
+    <!-- 购物车有商品 -->
     <div class="cart-has-item" v-else>
-      <p>购物车商品列表（后续完善）</p>
-      <el-button type="primary" style="margin-top: 20px" @click="goToCheckout">去结算</el-button>
+      <!-- 商品列表 -->
+      <div class="cart-items">
+        <div 
+          v-for="item in cartStore.cartList" 
+          :key="item.id" 
+          class="cart-item"
+        >
+          <!-- 商品信息 -->
+          <div class="item-info">
+            <div class="item-name">{{ item.name }}</div>
+            <div class="item-price">¥{{ item.price.toFixed(2) }}</div>
+          </div>
+          
+          <!-- 数量控制 -->
+          <div class="item-quantity">
+            <el-button 
+              size="mini" 
+              @click="cartStore.updateQuantity(item.id, -1)"
+              :disabled="item.quantity <= 1"
+            >
+              -1
+            </el-button>
+            <span class="quantity-text">{{ item.quantity }}</span>
+            <el-button 
+              size="mini" 
+              @click="cartStore.updateQuantity(item.id, 1)"
+            >
+              +1
+            </el-button>
+          </div>
+          
+          <!-- 删除按钮 -->
+          <el-button 
+            size="mini" 
+            type="danger" 
+            @click="cartStore.removeFromCart(item.id)"
+          >
+            删除
+          </el-button>
+        </div>
+      </div>
+      
+      <!-- 底部结算信息 -->
+      <div class="cart-footer">
+        <div class="total-info">
+          <span>总计：</span>
+          <span class="total-price">¥{{ cartStore.totalAmount }}</span>
+        </div>
+        <el-button type="primary" @click="goToCheckout" :disabled="cartStore.totalCount === 0">
+          去结算
+        </el-button>
+      </div>
     </div>
   </el-drawer>
 </template>
@@ -118,5 +168,83 @@ const goToCheckout = () => {
   flex-direction: column;
   align-items: center;
   margin-top: 50px;
+}
+
+/* 购物车样式 */
+.cart-has-item {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 购物车商品列表 */
+.cart-items {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 10px;
+  margin-bottom: 20px;
+}
+
+.cart-item {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+  gap: 15px;
+}
+
+/* 商品信息 */
+.item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.item-name {
+  font-weight: 500;
+  margin-bottom: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.item-price {
+  color: #D32F2F;
+  font-weight: bold;
+}
+
+/* 数量控制 */
+.item-quantity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 120px;
+}
+
+.quantity-text {
+  min-width: 30px;
+  text-align: center;
+}
+
+/* 底部结算信息 */
+.cart-footer {
+  padding: 20px 15px;
+  border-top: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fafafa;
+  margin: 0 -20px -20px;
+}
+
+.total-info {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+}
+
+.total-price {
+  font-size: 20px;
+  color: #D32F2F;
+  font-weight: bold;
 }
 </style>

@@ -1,9 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router'
-// 导入Login和Menu组件
+// 导入组件
 import Login from '../views/coustomer/Login.vue'
 import Menu from '../views/coustomer/Menu.vue'
+// 导入店员页面组件
+import StaffOrder from '../views/staff/StaffOrder.vue'
+import StaffProduct from '../views/staff/StaffProduct.vue'
 
-// 路由规则：包含登录页和菜单页
+// 路由规则
 const routes = [
   {
     path: '/',
@@ -11,9 +14,20 @@ const routes = [
     component: Login
   },
   {
-    path: '/menu', // 菜单页的访问路径
+    path: '/menu',
     name: 'Menu',
     component: Menu
+  },
+  // 店员相关路由
+  {
+    path: '/staff/order',
+    name: 'StaffOrder',
+    component: StaffOrder
+  },
+  {
+    path: '/staff/product',
+    name: 'StaffProduct',
+    component: StaffProduct
   }
 ]
 
