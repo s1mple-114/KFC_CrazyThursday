@@ -102,8 +102,14 @@ const allProducts = ref([])
 const getProductList = async () => {
   try {
     loading.value = true
-    const res = await request.get('/product')
+    console.log('开始请求产品数据...');
+    const res = await request.get('/products/products/');
+    console.log('请求成功，返回数据:', res);
+    console.log('返回数据类型:', typeof res);
+    console.log('是否为数组:', Array.isArray(res));
+    
     if (Array.isArray(res)) {
+      console.log('是数组，开始格式化数据...');
       // 对每个商品做字段格式化
       allProducts.value = res.map(item => ({
         id: item.id,
@@ -115,7 +121,9 @@ const getProductList = async () => {
         is_available: item.is_available !== undefined ? item.is_available : false, // 对应后端的is_available
         created_time: item.created_time
       }));
+      console.log('格式化后的商品数据:', allProducts.value);
     } else {
+      console.error('错误：返回数据不是数组格式！');
       allProducts.value = [];
     }
   } catch (error) {
