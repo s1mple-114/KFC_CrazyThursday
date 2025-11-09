@@ -15,6 +15,7 @@ class Product(models.Model):
     description = models.TextField(blank=True)  # 描述（可选）
     image = models.ImageField(upload_to='products/', blank=True, null=True, verbose_name='产品图片')
     created_time = models.DateTimeField(auto_now_add=True, db_index=True)  # 创建时间，添加索引用于排序
+    is_available = models.BooleanField(default=True, db_index=True)  # 是否上架，默认为上架状态
 
     # 后台显示商品名和价格
     def __str__(self):

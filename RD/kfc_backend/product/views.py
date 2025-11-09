@@ -37,6 +37,19 @@ class ProductViewSet(mixins.ListModelMixin,  # 获取商品列表
         category = self.request.query_params.get('category')
         if category:
             queryset = queryset.filter(category=category)
+        
+        # 支持按is_available字段过滤
+        is_available = self.request.query_params.get('is_available')
+        if is_available is not None:
+            # 将字符串转换为布尔值
+            is_available = is_available.lower() == 'true'
+            queryset = queryset.filter(is_available=is_available)
+            
+        # 支持按商品名称搜索
+        name = self.request.query_params.get('name')
+        if name:
+            queryset = queryset.filter(name__icontains=name)
+            
         return queryset
     
     def get_permissions(self):
