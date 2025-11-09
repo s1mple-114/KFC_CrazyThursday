@@ -28,8 +28,8 @@ request.interceptors.request.use(
 // 响应拦截器：处理响应数据和错误
 request.interceptors.response.use(
   (response) => {
-    // 直接返回响应体中的 data 部分（简化业务层获取数据的逻辑）
-    return response.data
+    // 返回完整响应对象，以便能获取订单ID等信息
+    return response
   },
   (error) => {
     if (error.response) {

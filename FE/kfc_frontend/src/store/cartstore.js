@@ -64,6 +64,8 @@ export const useCartStore = defineStore('cart', {
     // ⑤ 删除购物车单个商品
     removeFromCart(productId) {
       this.cartList = this.cartList.filter(item => item.id !== productId)
+      // 删除后检查是否需要更新全选状态
+      this.isAllChecked = this.cartList.length > 0 && this.cartList.every(item => item.isChecked)
       this.saveToLocalStorage()
     },
 
@@ -98,6 +100,13 @@ export const useCartStore = defineStore('cart', {
     // ③ 勾选的商品列表（结算时传给后端）
     checkedGoods: (state) => {
       return state.cartList.filter(item => item.isChecked)
+    },
+    
+    // ④ 勾选的商品数量
+    checkedCount: (state) => {
+      return state.cartList
+        .filter(item => item.isChecked)
+        .reduce((total, item) => total + item.quantity, 0)
     }
   }
 })
