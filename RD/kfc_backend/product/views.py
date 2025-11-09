@@ -7,18 +7,18 @@ from user.permissions import IsStaffUser  # 导入“仅店员”权限类
 from .models import Product
 from .serializers import ProductSerializer
 
-class ProductViewSet(mixins.ListModelMixin,
-                    mixins.RetrieveModelMixin,
-                    mixins.CreateModelMixin,
-                    mixins.UpdateModelMixin,
-                    mixins.DestroyModelMixin,
+class ProductViewSet(mixins.ListModelMixin,  # 获取商品列表
+                    mixins.RetrieveModelMixin, # 获取单个商品详情
+                    mixins.CreateModelMixin,   # 创建商品
+                    mixins.UpdateModelMixin,   # 更新商品
+                    mixins.DestroyModelMixin,  # 删除商品
                     viewsets.GenericViewSet):
-    queryset = Product.objects.all()
-    serializer_class = ProductSerializer
-    permission_classes = [AllowAny]
+    queryset = Product.objects.all()  # 查询所有商品
+    serializer_class = ProductSerializer  # 商品序列化器
+    permission_classes = [AllowAny]  # 默认允许任何用户访问
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
-    search_fields = ['name', 'category']
-    ordering_fields = ['price', 'created_at']
+    search_fields = ['name', 'category']  # 支持按名称和分类搜索
+    ordering_fields = ['price', 'created_at']  # 支持按价格和创建时间排序
     pagination_class = None  # 取消分页
     
     def list(self, request, *args, **kwargs):

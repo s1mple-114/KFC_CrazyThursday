@@ -5,15 +5,15 @@ from user.permissions import IsOwnerOrStaff  # 导入“所有者或店员”权
 from .models import OrderItem  # 保持类名为驼峰命名
 from .serializers import OrderItemSerializer  # 保持类名为驼峰命名
 
-class OrderItemViewSet(mixins.ListModelMixin,
-                      mixins.RetrieveModelMixin,
-                      mixins.CreateModelMixin,
-                      mixins.UpdateModelMixin,
-                      mixins.DestroyModelMixin,
+class OrderItemViewSet(mixins.ListModelMixin,  # 获取订单项列表
+                      mixins.RetrieveModelMixin,  # 获取单个订单项详情
+                      mixins.CreateModelMixin,  # 创建订单项
+                      mixins.UpdateModelMixin,  # 更新订单项
+                      mixins.DestroyModelMixin,  # 删除订单项
                       viewsets.GenericViewSet):  # 保持类名为驼峰命名
-    queryset = OrderItem.objects.all()
-    serializer_class = OrderItemSerializer
-    pagination_class = None  # 取消分页
+    queryset = OrderItem.objects.all()  # 默认查询所有订单项
+    serializer_class = OrderItemSerializer   # 使用订单项序列化器
+    pagination_class = None  # 禁用分页，返回所有数据
     
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
