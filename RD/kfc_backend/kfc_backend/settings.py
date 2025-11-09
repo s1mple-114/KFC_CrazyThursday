@@ -93,14 +93,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
         # SQLite性能优化配置
         'OPTIONS': {
-            # 启用外键约束
-            'foreign_keys': 1,
-            # 启用WAL模式，提高并发性能
-            'journal_mode': 'wal',
-            # 增加缓存大小，单位KB
-            'cache_size': -20000,  # 负号表示KB，这里是20MB
-            # 同步模式设置为NORMAL，平衡性能和安全性
-            'synchronous': 'NORMAL',
         },
         # 连接池配置（适用于将来迁移到MySQL/PostgreSQL）
         # 'POOL_OPTIONS': {
