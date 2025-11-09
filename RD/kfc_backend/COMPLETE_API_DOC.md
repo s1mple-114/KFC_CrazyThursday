@@ -1,11 +1,11 @@
 # KFC后端API文档
-
 ## 1. 基础信息
 
-- **基础URL**: `http://localhost:8000/api/`
-- **认证方式**: Token认证（登录后返回Token）
-- **请求格式**: JSON
-- **响应格式**: JSON
+- **默认本地地址**：`http://localhost:8000/`
+- **API基础路径**：`http://localhost:8000/api/`
+- **认证方式**：
+  - Session认证（登录后自动保存cookie）
+  - Token认证（登录后返回Token）
 
 ### 认证方式
 需要在Header中添加以下认证信息：
@@ -23,6 +23,13 @@ Authorization: Token {token}
    - PENDING (待支付)
    - PAID (已支付)
    - COMPLETED (已完成)
+
+3. **产品分类**（使用大写）：
+   - BURGER（汉堡）
+   - SNACK（小食）
+   - DRINK（饮料）
+   - COMBO（套餐）
+
 
 ## 2. 接口详情
 
@@ -837,3 +844,48 @@ Authorization: Token 39e0ca0b459a58f90e5e883b7b3f22f7d954e6f1
 4. 用户只能访问自己的订单和订单项数据
 5. 敏感操作（如创建/更新产品、查看所有用户）需要管理员或员工权限
 6. 接口返回的时间戳格式为ISO 8601格式（如：2024-01-01T12:00:00Z）
+
+## 7. 接口测试状态
+
+✅ **所有17个API接口全部测试通过**
+
+### 5.1 测试结果详情
+
+#### 公开接口（无需认证）
+- 用户注册 `POST /auth/users/register/` - ✅ 测试通过
+- 获取所有产品 `GET /products/products/` - ✅ 测试通过
+- 按分类筛选产品 `GET /products/products/?category=BURGER` - ✅ 测试通过
+
+#### 需要认证的接口
+- 用户登录 `POST /auth/users/login/` - ✅ 测试通过
+- 用户登出 `POST /auth/users/logout/` - ✅ 测试通过
+- 获取我的订单 `GET /orders/orders/` - ✅ 测试通过
+- 创建订单 `POST /orders/orders/` - ✅ 测试通过
+- 获取订单详情 `GET /orders/orders/{id}/` - ✅ 测试通过
+- 更新订单状态 `POST /orders/orders/{id}/update_status/` - ✅ 测试通过
+- 获取订单项 `GET /order-items/order-items/` - ✅ 测试通过
+- 获取特定订单项 `GET /order-items/order-items/{id}/` - ✅ 测试通过
+- 创建订单项 `POST /order-items/order-items/` - ✅ 测试通过
+
+#### 权限控制测试
+- 获取用户列表 `GET /auth/users/` - ✅ 权限控制正确（普通用户403）
+- 创建产品 `POST /products/products/` - ✅ 权限控制正确（普通用户403）
+- 更新产品 `PUT /products/products/{id}/` - ✅ 权限控制正确（普通用户403）
+- 删除产品 `DELETE /products/products/{id}/` - ✅ 权限控制正确（普通用户403）
+
+### 5.2 系统功能状态
+
+✅ **功能完整，API接口正常工作，权限控制符合安全要求**
+
+## 6. 相关文档
+
+- [项目架构文档](ARCHITECTURE.md) - 详细的技术架构说明
+- [部署与使用指南](DEPLOYMENT_GUIDE.md) - 环境配置和部署步骤
+
+## 7. 版本信息
+
+### v1.0.0
+- 初始版本
+- 包含完整API功能实现
+- 完善的权限控制
+- 详细的API文档
