@@ -91,8 +91,41 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+        # SQLite性能优化配置
+        'OPTIONS': {
+            # 启用外键约束
+            'foreign_keys': 1,
+            # 启用WAL模式，提高并发性能
+            'journal_mode': 'wal',
+            # 增加缓存大小，单位KB
+            'cache_size': -20000,  # 负号表示KB，这里是20MB
+            # 同步模式设置为NORMAL，平衡性能和安全性
+            'synchronous': 'NORMAL',
+        },
+        # 连接池配置（适用于将来迁移到MySQL/PostgreSQL）
+        # 'POOL_OPTIONS': {
+        #     'pool_size': 10,
+        #     'max_overflow': 20,
+        #     'timeout': 30,
+        #     'recycle': 3600,
+        # }
     }
 }
+
+# 数据库连接池配置（可选）
+# 如果使用django-db-connection-pool，请取消注释并安装相应包
+# DATABASES['default']['ENGINE'] = 'dj_db_conn_pool.backends.mysql'
+# 或 'dj_db_conn_pool.backends.postgresql'
+
+# 数据库查询优化设置
+DATABASE_QUERY_TIMEOUT = 30  # 查询超时时间（秒）
+
+# 事务设置
+ATOMIC_REQUESTS = True  # 使每个视图函数在事务中执行
+
+# 启用数据库连接监控（可选，用于调试）
+if DEBUG:
+    DATABASE_CONNECTION_POOL_DEBUG = True
 
 
 # Password validation
@@ -139,6 +172,30 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# 数据库缓存配置（可选，提高查询性能）
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+        'OPTIONS': {
+            'MAX_ENTRIES': 10000,  # 最大缓存条目
+            'CULL_FREQUENCY': 3,    # 当达到最大条目时，删除1/3的条目
+        },
+        'TIMEOUT': 300,  # 默认缓存时间（秒）
+    }
+    # 生产环境建议使用Redis缓存
+    # 'default': {
+    #     'BACKEND': 'django_redis.cache.RedisCache',
+    #     'LOCATION': 'redis://127.0.0.1:6379/1',
+    #     'OPTIONS': {
+    #         'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+    #     }
+    # }
+}
+
+# 启用ORM查询缓存
+DJANGO_CACHE_QUERIES = True
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         # 'rest_framework.authentication.SessionAuthentication',# Session  认证
@@ -148,7 +205,16 @@ REST_FRAMEWORK = {
        'rest_framework.permissions.AllowAny', 
     ],
     # 移除默认分页类，确保返回纯数组格式
-    'DEFAULT_PAGINATION_CLASS': None
+    'DEFAULT_PAGINATION_CLASS': None,
+    # 添加缓存配置
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle'
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '1000/day',
+        'user': '10000/day'
+    }
 }
 
 
