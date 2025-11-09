@@ -59,7 +59,7 @@ import { ElMessage } from 'element-plus'
 // 导入Navbar组件
 import Navbar from '../../components/Navbar.vue'
 // 移除未使用的request导入
-import { useCartStore } from '../../store/cartStore'
+import { useCartStore } from '../../store/cartstore' // 修正导入路径大小写
 
 const categoryMap = {
   '全部': '',

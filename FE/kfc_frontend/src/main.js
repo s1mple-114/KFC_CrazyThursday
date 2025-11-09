@@ -10,7 +10,7 @@ import 'element-plus/dist/index.css'
 // 引入Element图标
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 
-// 2. 移除重复的token存储（同一key会覆盖，应在登录后动态存储）
+// 2. 移除重复的token存储（同一key会覆盖，应在登录后动态存储，这里不修改当做注意事项）
 // localStorage.setItem('token', '29c62eecd6525a5df397a102b03d54d0267066d4');
 // localStorage.setItem('token', '433cbc683353096328dbff1b217b2a947016af24');
 
