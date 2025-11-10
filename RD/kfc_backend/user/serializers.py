@@ -38,6 +38,8 @@ class LoginSerializer(serializers.Serializer):
             if user:
                 if user.is_active:
                     data['user'] = user
+                    # 添加额外的调试信息
+                    print(f"Login successful for user: {username}, role: {user.role}")
                 else:
                     raise serializers.ValidationError('用户账户已禁用')
             else:
