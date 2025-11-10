@@ -117,17 +117,23 @@ const handleLogin = async () => {
 
   try {
     // 3. 执行登录（无论注册成功还是用户已存在，都走到登录步骤）
+    console.log('登录请求参数:', { username: loginForm.username, password: loginForm.password })
     const loginRes = await request.post('/auth/users/login/', {
       username: loginForm.username,
-      password: loginForm.password,
-      role: loginForm.role
+      password: loginForm.password
+      // 移除不必要的role字段，因为后端LoginSerializer不处理这个字段
     })
-
-    // 登录成功处理
-    localStorage.setItem('token', loginRes.token)
-    localStorage.setItem('role', loginForm.role)
+    
+    console.log('登录响应:', loginRes.data)
+    // 登录成功处理 - 使用后端返回的用户实际角色，而不是用户选择的角色
+    localStorage.setItem('token', loginRes.data.token)
+    // 从后端返回的用户数据中获取实际角色
+    const actualRole = loginRes.data.user.role
+    console.log('实际用户角色:', actualRole)
+    localStorage.setItem('role', actualRole)
+    
     ElMessage.success('登录成功')
-    router.push(loginForm.role === 'customer' ? '/Menu' : '/staff/order')
+    router.push(actualRole === 'customer' ? '/Menu' : '/staff/order')
   } catch (error) {
     // 登录失败（如密码错误等，拦截器已处理提示）
   } finally {

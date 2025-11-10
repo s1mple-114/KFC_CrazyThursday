@@ -19,12 +19,14 @@ const routes = [
   {
     path: '/menu',
     name: 'Menu',
-    component: Menu
+    component: Menu,
+    meta: { requiresAuth: true, role: 'customer' }
   },
   {
     path: '/cart',
     name: 'Cart',
-    component: Cart
+    component: Cart,
+    meta: { requiresAuth: true, role: 'customer' }
   },
   {
     path: '/order-submit',
@@ -41,18 +43,21 @@ const routes = [
   {
     path: '/order-list',
     name: 'OrderList',
-    component: OrderList
+    component: OrderList,
+    meta: { requiresAuth: true, role: 'customer' }
   },
   // 店员相关路由
   {
     path: '/staff/order',
     name: 'StaffOrder',
-    component: StaffOrder
+    component: StaffOrder,
+    meta: { requiresAuth: true, role: 'staff' }
   },
   {
     path: '/staff/product',
     name: 'StaffProduct',
-    component: StaffProduct
+    component: StaffProduct,
+    meta: { requiresAuth: true, role: 'staff' }
   }
 ]
 
@@ -60,6 +65,32 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes
+})
+
+// 路由守卫：检查用户登录状态和权限
+router.beforeEach((to, from, next) => {
+  // 获取本地存储的token和角色
+  const token = localStorage.getItem('token')
+  const role = localStorage.getItem('role')
+  
+  // 检查目标路由是否需要认证
+  if (to.meta.requiresAuth) {
+    // 如果没有token，表示未登录，跳转到登录页
+    if (!token) {
+      next('/')
+      return
+    }
+    
+    // 如果路由指定了角色要求，检查用户角色是否匹配
+    if (to.meta.role && to.meta.role !== role) {
+      // 角色不匹配，根据用户角色跳转到对应首页
+      next(role === 'customer' ? '/menu' : '/staff/order')
+      return
+    }
+  }
+  
+  // 允许访问
+  next()
 })
 
 export default router

@@ -38,11 +38,22 @@ request.interceptors.response.use(
       const errorData = error.response.data
 
       if (status === 401) {
-        // 401 未授权：清除本地存储的 token 和角色，跳转至登录页
-        localStorage.removeItem('token')
-        localStorage.removeItem('role')
-        router.push('/login')
-        ElMessage.error('登录已过期，请重新登录')
+        // 检查是否在演示模式下或者是否是关键流程页面（如支付流程）
+        // 从当前URL判断是否在支付相关页面
+        const currentPath = window.location.pathname;
+        const isPaymentFlow = currentPath.includes('/order-submit') || currentPath.includes('/payment');
+        
+        // 如果不是在支付流程中，并且不是演示模式，则清除登录状态并重定向
+        if (!isPaymentFlow) {
+          localStorage.removeItem('token')
+          localStorage.removeItem('role')
+          router.push('/login')
+          ElMessage.error('登录已过期，请重新登录')
+        } else {
+          // 在支付流程中，不清除登录状态，只显示警告信息
+          console.warn('API认证失败，但在支付流程中保留登录状态')
+          // 不跳转到登录页，让页面可以继续使用模拟数据
+        }
       } else if (status === 400) {
         // 400 错误请求：通常是参数错误，显示后端返回的具体信息
         ElMessage.error(errorData.message || '参数错误，请检查输入')

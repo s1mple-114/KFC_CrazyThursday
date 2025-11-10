@@ -5,9 +5,10 @@ export default defineConfig({
   plugins: [vue()],
   server: {
     proxy: {
-      '/api/auth/users': {
-        target: 'https://wkpgptfg-8000.asse.devtunnels.ms',
-        changeOrigin: true
+      '/api': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+        secure: false
       }
     }
   }
